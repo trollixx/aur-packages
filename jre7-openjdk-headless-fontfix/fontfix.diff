@@ -1,18 +1,18 @@
 diff -r 19cc3b567644 make/sun/font/Makefile
---- a/make/sun/font/Makefile	Wed Jan 22 12:34:24 2014 -0800
-+++ b/make/sun/font/Makefile	Fri Jan 24 21:41:23 2014 +0900
+--- openjdk/jdk/make/sun/font/Makefile	Wed Jan 22 12:34:24 2014 -0800
++++ openjdk/jdk/make/sun/font/Makefile	Fri Jan 24 21:41:23 2014 +0900
 @@ -138,7 +138,7 @@
    ifeq ($(USING_SYSTEM_FT_LIB), false)
      FREETYPE_LIB = $(LIB_LOCATION)/$(LIB_PREFIX)freetype.$(LIBRARY_SUFFIX).6
    endif
--  OTHER_LDLIBS += -L$(FREETYPE_LIB_PATH) -lfreetype
-+  OTHER_LDLIBS += -L$(FREETYPE_LIB_PATH) -lfreetype -lfontconfig
+-  OTHER_LDLIBS += -L$(FREETYPE_LIB_PATH) $(FT2_LIBS)
++  OTHER_LDLIBS += -L$(FREETYPE_LIB_PATH) $(FT2_LIBS) -lfontconfig
  endif
 
  library:: $(FREETYPE_LIB)
 diff -r 19cc3b567644 src/share/native/sun/font/freetypeScaler.c
---- a/src/share/native/sun/font/freetypeScaler.c	Wed Jan 22 12:34:24 2014 -0800
-+++ b/src/share/native/sun/font/freetypeScaler.c	Fri Jan 24 21:41:23 2014 +0900
+--- openjdk/jdk/src/share/native/sun/font/freetypeScaler.c	Wed Jan 22 12:34:24 2014 -0800
++++ openjdk/jdk/src/share/native/sun/font/freetypeScaler.c	Fri Jan 24 21:41:23 2014 +0900
 @@ -38,6 +38,8 @@
  #include FT_SIZES_H
  #include FT_OUTLINE_H
