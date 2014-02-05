@@ -3,7 +3,7 @@
 # Maintainer: Guillaume ALAUX <guillaume@archlinux.org>
 # Contributor: Jan de Groot <jgc@archlinux.org>
 
-pkgname=('jre7-openjdk-headless' 'jre7-openjdk' 'jdk7-openjdk' 'openjdk7-src' 'openjdk7-doc')
+pkgname=jre7-openjdk-headless-fontfix
 pkgbase=java7-openjdk
 _java_ver=7
 _icedtea_ver=2.4.5
@@ -44,8 +44,6 @@ source=(http://icedtea.classpath.org/download/source/icedtea-${_icedtea_ver}.tar
         ${_url}/hotspot/archive/${_HOTSPOT_CHANGESET}.tar.gz				# hotspot.tar.gz
         fontconfig-paths.diff
         openjdk7_nonreparenting-wm.diff
-        jdk7-openjdk.profile
-        jdk7-openjdk.profile.csh
         jre7-openjdk.profile
         jre7-openjdk.profile.csh)
 
@@ -59,8 +57,6 @@ sha256sums=('10c08eeffaa0602b23cb957a2595a2ad3ab474cbe47b12743bbdd79037d5883d'
             'd8c1681ae76e660c1888065933cedbbc1309869c7a2fb98f07c424716d5ebaf9'
             '9ad943ceb3dbcdf45d72974fc3667886a7ed65c69ab9abc17be5412827551a7f'
             '56b919ababb13bd6afdcdaceb112b529b6e82539255f2dae9a7e5eb91645164b'
-            'bd55299e08e6f8e61ba5baad0990170891801a29a1e8137e502b5e8a10fc37ea'
-            '3f28f8bfc6dd105a07f747d7135c77a77de433e2b8647dd7520a900135203fbd'
             'b7c045b08ad55a9f79390c104fa846d0e7dbb49fccffb2fab2a3824b6b19c9c8'
             '89d99d8ac269ca66e2e279aff652d5aac938a35faec93cd8cff8f048052bd3ce')
 
@@ -121,7 +117,7 @@ check() {
   make -k check
 }
 
-package_jre7-openjdk-headless() {
+package() {
   pkgdesc="Free Java environment based on OpenJDK 7.0 with IcedTea7 replacing binary plugs - Minimal Java runtime - needed for executing non GUI Java programs"
   depends=('libjpeg-turbo' 'lcms2' 'nss' 'ca-certificates-java')
   optdepends=('libcups: needed for Java Mauve support - libmawt.so'
@@ -247,119 +243,4 @@ package_jre7-openjdk-headless() {
   pushd ${pkgdir}${_jvmdir}/jre/lib/${_JARCH}/
      ln -vsf /etc/java-7-openjdk/jvm.cfg .
   popd
-}
-	 
-package_jre7-openjdk() {
-  pkgdesc="Free Java environment based on OpenJDK 7.0 with IcedTea7 replacing binary plugs - Full Java runtime environment - needed for executing Java GUI and Webstart programs"
-  depends=('jre7-openjdk-headless' 'xdg-utils' 'hicolor-icon-theme')
-  optdepends=('icedtea-web-java7: web browser plugin + Java Web Start'
-             'alsa-lib: for basic sound support'
-             'giflib: for gif format support'
-             'libpulse: for advanced sound support'
-             'gtk2: for the Gtk+ look and feel - desktop usage'
-             'libxtst: linked in xawt/libmawt.so - desktop usage')
-  install=jre7-openjdk.install
-  provides=('java-runtime=7')
-  conflicts=('openjdk6')
-  
-  mv ${srcdir}/tmp-desktop-jre/* ${pkgdir}
-  # Link binaries into /usr/bin
-  pushd ${pkgdir}${_jvmdir}/jre/bin
-  install -m755 -d ${pkgdir}/usr/bin/
-  for file in *; do
-    ln -sf ${_jvmdir}/jre/bin/${file} ${pkgdir}/usr/bin
-  done
-  popd
-  
-  cd "${srcdir}/icedtea-${_icedtea_ver}/openjdk.build/j2sdk-image/jre"
-
-  # Install icons and menu entries
-  for s in 16 24 32 48 ; do
-    install -m755 -d ${pkgdir}/usr/share/icons/hicolor/${s}x${s}/apps/
-    install -m644 ../../../openjdk/jdk/src/solaris/classes/sun/awt/X11/java-icon${s}.png \
-                  ${pkgdir}/usr/share/icons/hicolor/${s}x${s}/apps/java.png
-  done
-  
-  # Install desktop files.
-  install -m755 -d ${pkgdir}/usr/share/applications
-  install -m644 ${srcdir}/icedtea-${_icedtea_ver}/policytool.desktop ${pkgdir}/usr/share/applications
-
-  # link license
-  install -m755 -d ${pkgdir}/usr/share/licenses
-  ln -sf /usr/share/licenses/${pkgbase} "${pkgdir}/usr/share/licenses/${pkgname}"
-}
-
-package_jdk7-openjdk() {
-  pkgdesc="Free Java environment based on OpenJDK 7.0 with IcedTea7 replacing binary plugs - SDK"
-  depends=('jre7-openjdk')
-  provides=('java-environment=7')
-  conflicts=('java-environment')
-  replaces=('openjdk6')
-  backup=(etc/profile.d/jdk.sh etc/profile.d/jdk.csh)
-
-  cd "${srcdir}/icedtea-${_icedtea_ver}/openjdk.build/j2sdk-image"
-
-  # Main files
-  install -m755 -d ${pkgdir}${_jvmdir}
-
-  cp -a include lib ${pkgdir}${_jvmdir}
-
-  # 'bin' files
-  pushd bin
-  install -m755 -d ${pkgdir}${_jvmdir}/bin/ \
-                   ${pkgdir}/usr/bin/ \
-                   ${pkgdir}/usr/share/man/{,ja/}man1/
-
-  # 'java-rmi.cgi' will be handled separately as it should not be in the PATH and has no man page
-  for b in $(ls | grep -v java-rmi.cgi); do
-    if [ -e ../jre/bin/${b} ]; then
-      # Provide a link of the jre binary in the jdk/bin/ directory
-      ln -s ../jre/bin/${b} ${pkgdir}${_jvmdir}/bin/${b}
-    else
-      # Copy binary to jdk/bin/
-      install -m755 ${b} ${pkgdir}${_jvmdir}/bin/${b}
-      # Copy man page
-      install -m644 ../man/man1/${b}.1 ${pkgdir}/usr/share/man/man1/${b}.1
-      install -m644 ../man/ja/man1/${b}.1 ${pkgdir}/usr/share/man/ja/man1/${b}.1
-      # Link from /bin/
-      ln -s ${_jvmdir}/bin/${b} ${pkgdir}/usr/bin/${b}
-    fi
-  done
-  popd
-
-  # Install desktop files.
-  install -m755 -d ${pkgdir}/usr/share/applications
-  install -m644 ${srcdir}/icedtea-${_icedtea_ver}/jconsole.desktop ${pkgdir}/usr/share/applications
-
-  # Handling 'java-rmi.cgi' separately
-  install -m755 -D bin/java-rmi.cgi ${pkgdir}${_jvmdir}/bin/java-rmi.cgi
-
-  # Set some variables
-  install -m755 -d ${pkgdir}/etc/profile.d/
-  install -m755 ${srcdir}/${pkgname}.profile ${pkgdir}/etc/profile.d/jdk.sh
-  install -m755 ${srcdir}/${pkgname}.profile.csh ${pkgdir}/etc/profile.d/jdk.csh
-
-  # Temporarily fixing FS#35141
-  chmod go+r ${pkgdir}${_jvmdir}/lib/sa-jdi.jar
-
-  # link license
-  install -m755 -d ${pkgdir}/usr/share/licenses
-  ln -sf /usr/share/licenses/${pkgbase} "${pkgdir}/usr/share/licenses/${pkgname}"
-}
-
-package_openjdk7-src() {
-  pkgdesc="Free Java environment based on OpenJDK 7.0 with IcedTea7 replacing binary plugs - sources"
-  replaces=('openjdk6-src')
-  
-  install -D ${srcdir}/icedtea-${_icedtea_ver}/openjdk.build/j2sdk-image/src.zip \
-             ${pkgdir}${_jvmdir}/src.zip
-}
-
-package_openjdk7-doc() {
-  pkgdesc="Free Java environment based on OpenJDK 7.0 with IcedTea7 replacing binary plugs - documentation"
-
-  install -m755 -d ${pkgdir}/usr/share/doc/openjdk7-doc
-  for i in ${srcdir}/icedtea-${_icedtea_ver}/openjdk.build/docs/*; do
-    cp -a $i ${pkgdir}/usr/share/doc/openjdk7-doc/
-  done
 }
