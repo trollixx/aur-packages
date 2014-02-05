@@ -1,6 +1,6 @@
-# $Id$
-# Maintainer: Andreas Radke <andyrtr@archlinux.org>
-# Maintainer: Guillaume ALAUX <guillaume@archlinux.org>
+# Maintainer: Oleg Shparber <trollixx+aur@gmail.com>
+# Contributor: Andreas Radke <andyrtr@archlinux.org>
+# Contributor: Guillaume ALAUX <guillaume@archlinux.org>
 # Contributor: Jan de Groot <jgc@archlinux.org>
 
 pkgname=jre7-openjdk-headless-fontfix
