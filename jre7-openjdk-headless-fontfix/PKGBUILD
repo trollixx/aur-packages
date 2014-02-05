@@ -43,6 +43,7 @@ source=(http://icedtea.classpath.org/download/source/icedtea-${_icedtea_ver}.tar
         ${_url}/langtools/archive/${_LANGTOOLS_CHANGESET}.tar.gz			# langtools.tar.gz
         ${_url}/hotspot/archive/${_HOTSPOT_CHANGESET}.tar.gz				# hotspot.tar.gz
         fontconfig-paths.diff
+        fontfix.diff
         openjdk7_nonreparenting-wm.diff
         jre7-openjdk.profile
         jre7-openjdk.profile.csh)
@@ -56,6 +57,7 @@ sha256sums=('10c08eeffaa0602b23cb957a2595a2ad3ab474cbe47b12743bbdd79037d5883d'
             '86cb370ce2084c4b699d8c002ebe6c026e86206ffa82a2f3d7906aadb94ed79f'
             'd8c1681ae76e660c1888065933cedbbc1309869c7a2fb98f07c424716d5ebaf9'
             '9ad943ceb3dbcdf45d72974fc3667886a7ed65c69ab9abc17be5412827551a7f'
+            '41c61373ec72b8df845b00273b1725ce0e441fb3892af4acd31d03254855f564'
             '56b919ababb13bd6afdcdaceb112b529b6e82539255f2dae9a7e5eb91645164b'
             'b7c045b08ad55a9f79390c104fa846d0e7dbb49fccffb2fab2a3824b6b19c9c8'
             '89d99d8ac269ca66e2e279aff652d5aac938a35faec93cd8cff8f048052bd3ce')
@@ -83,6 +85,7 @@ build() {
 
   cp ${srcdir}/*.diff ${srcdir}/icedtea-${_icedtea_ver}/patches
   export DISTRIBUTION_PATCHES="patches/fontconfig-paths.diff \
+                               patches/fontfix.diff \
                                patches/openjdk7_nonreparenting-wm.diff"
 
   if [ "$_bootstrap" = "1" ]; then
@@ -119,12 +122,11 @@ check() {
 
 package() {
   pkgdesc="Free Java environment based on OpenJDK 7.0 with IcedTea7 replacing binary plugs - Minimal Java runtime - needed for executing non GUI Java programs"
-  depends=('libjpeg-turbo' 'lcms2' 'nss' 'ca-certificates-java')
+  depends=('libjpeg-turbo' 'lcms2' 'nss' 'ca-certificates-java' 'fontconfig')
   optdepends=('libcups: needed for Java Mauve support - libmawt.so'
-              'fontconfig: needed for Java Mauve support - libmawt.so'
               'java-rhino: for some JavaScript support')
-  provides=('java-runtime-headless=7')
-  conflicts=('openjdk6')
+  provides=('java-runtime-headless=7' 'jre7-openjdk-headless')
+  conflicts=('openjdk6' 'jre7-openjdk-headless')
   backup=(etc/profile.d/jre.sh
           etc/profile.d/jre.csh
           etc/java-7-openjdk/calendars.properties
