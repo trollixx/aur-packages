@@ -1,0 +1,6 @@
+# Folders created by makepkg
+src/
+pkg/
+
+# Common archives
+*.tar.*
