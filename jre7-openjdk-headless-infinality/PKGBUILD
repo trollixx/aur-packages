@@ -204,8 +204,8 @@ package_jre7-openjdk-infinality() {
              'libpulse: for advanced sound support'
              'gtk2: for the Gtk+ look and feel - desktop usage'
              'libxtst: linked in xawt/libmawt.so - desktop usage')
-  provides=('java-runtime=7' 'java-runtime-openjdk=7')
-  conflicts=('openjdk6')
+  provides=('java-runtime=7' 'java-runtime-openjdk=7' "jre7-openjdk=${pkgver}-${pkgrel}")
+  conflicts=('openjdk6' 'jre7-openjdk')
   # TODO remove after some time
   replaces=('jre7-openjdk-wm')
   install=jre7-openjdk.install
@@ -245,7 +245,8 @@ package_jre7-openjdk-infinality() {
 package_jdk7-openjdk-infinality() {
   pkgdesc='OpenJDK Java 7 development kit'
   depends=("jre7-openjdk-infinality=${pkgver}-${pkgrel}")
-  provides=('java-environment=7' 'java-environment-openjdk=7')
+  provides=('java-environment=7' 'java-environment-openjdk=7' "jdk7-openjdk=${pkgver}-${pkgrel}")
+  conflicts=('jdk7-openjdk')
   replaces=('openjdk6' 'jdk7-openjdk-wm')
   install=jdk7-openjdk.install
 
