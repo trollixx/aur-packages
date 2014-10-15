@@ -14,7 +14,7 @@ _JDK_UPDATE_VERSION=65
 _bootstrap=0 # 0/1 for quick build or full bootstrap
 
 pkgver=${_java_ver}.u${_JDK_UPDATE_VERSION}_${_icedtea_ver}
-pkgrel=1
+pkgrel=3
 arch=('i686' 'x86_64')
 url='http://icedtea.classpath.org'
 license=('custom')
@@ -115,7 +115,7 @@ check() {
 
 package_jre7-openjdk-headless-infinality() {
   pkgdesc='OpenJDK Java 7 headless runtime environment'
-  depends=('java-common' 'libjpeg-turbo' 'lcms2' 'nss' 'ca-certificates-java')
+  depends=('java-runtime-common' 'libjpeg-turbo' 'lcms2' 'nss' 'ca-certificates-java')
   optdepends=('libcups: needed for Java Mauve support - libmawt.so'
               'fontconfig: needed for Java Mauve support - libmawt.so'
               'java-rhino: for some JavaScript support')
@@ -244,7 +244,7 @@ package_jre7-openjdk-infinality() {
 
 package_jdk7-openjdk-infinality() {
   pkgdesc='OpenJDK Java 7 development kit'
-  depends=("jre7-openjdk-infinality=${pkgver}-${pkgrel}")
+  depends=('java-environment-common' "jre7-openjdk-infinality=${pkgver}-${pkgrel}")
   provides=('java-environment=7' 'java-environment-openjdk=7' "jdk7-openjdk=${pkgver}-${pkgrel}")
   conflicts=('jdk7-openjdk')
   replaces=('openjdk6' 'jdk7-openjdk-wm')
