@@ -4,3 +4,4 @@ pkg/
 
 # Common archives
 *.tar.*
+*.pkg.tar
